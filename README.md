@@ -91,3 +91,34 @@ For a production build served separately from the API, set `VITE_API_URL` to you
 | Admin     | `/api/admin`       | Dashboard aggregates                       |
 
 Uploaded files are stored under `backend/uploads/` and served at `/uploads/...`.
+
+## Dummy project (quick upload sample)
+
+A minimal sample is available in `dummy-project/` with plain HTML/CSS/JS.
+
+To run it, open `dummy-project/index.html` in your browser.
+
+## Vercel deployment (frontend + backend)
+
+Deploy frontend and backend as two separate Vercel projects.
+
+1. **Deploy backend (`backend/`)**
+   - In Vercel, create a new project and set root directory to `backend`.
+   - Keep the included `backend/vercel.json` as-is.
+   - Add environment variables:
+     - `MONGO_URI` (Atlas connection string)
+     - `JWT_SECRET` (strong random string)
+     - `JWT_EXPIRES_IN=7d` (optional)
+     - `AUTO_SEED=true` (recommended on first deploy so admin user exists)
+     - `CLIENT_ORIGINS=https://<your-frontend-domain>.vercel.app`
+     - `ALLOW_VERCEL_PREVIEWS=true` (optional, allows preview domains)
+
+2. **Deploy frontend (`frontend/`)**
+   - Create another Vercel project with root directory `frontend`.
+   - Add env variable:
+     - `VITE_API_URL=https://<your-backend-domain>.vercel.app`
+   - Redeploy frontend after setting env.
+
+3. **Admin login**
+   - Use `admin@pharma.local` / `Admin123!` (seeded when `AUTO_SEED=true`).
+   - If you disable seeding later, keep the created admin in MongoDB.

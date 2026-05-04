@@ -10,10 +10,39 @@ const adminRoutes = require('./routes/admin.routes');
 
 const app = express();
 
-// Allow frontend dev server to call API
+function parseOrigins(value) {
+  return (value || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+const allowVercelPreviews = process.env.ALLOW_VERCEL_PREVIEWS === 'true';
+const allowedOrigins = new Set([
+  ...parseOrigins(process.env.CLIENT_ORIGINS),
+  ...parseOrigins(process.env.CLIENT_ORIGIN),
+  'http://localhost:5173',
+]);
+
+function isAllowedOrigin(origin) {
+  if (!origin) return true;
+  if (allowedOrigins.has(origin)) return true;
+  if (allowVercelPreviews && /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin)) {
+    return true;
+  }
+  return false;
+}
+
+// Allow frontend app(s) to call API in dev/prod.
 app.use(
   cors({
-    origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
+    origin(origin, callback) {
+      if (isAllowedOrigin(origin)) {
+        callback(null, true);
+        return;
+      }
+      callback(new Error('CORS origin not allowed'));
+    },
     credentials: true,
   })
 );
