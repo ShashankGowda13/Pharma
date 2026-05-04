@@ -32,14 +32,14 @@ export function AuthProvider({ children }) {
   }, [loadMe]);
 
   const login = useCallback(async (email, password) => {
-    const { data } = await api.post('/api/auth/login', { email, password });
+    const { data } = await api.post('/api/auth/login', { email, password }, { skipAuth: true });
     localStorage.setItem(TOKEN_KEY, data.token);
     setUser(data.user);
     return data.user;
   }, []);
 
   const register = useCallback(async (payload) => {
-    const { data } = await api.post('/api/auth/register', payload);
+    const { data } = await api.post('/api/auth/register', payload, { skipAuth: true });
     localStorage.setItem(TOKEN_KEY, data.token);
     setUser(data.user);
     return data.user;

@@ -106,17 +106,19 @@ Deploy frontend and backend as two separate Vercel projects.
    - In Vercel, create a new project and set root directory to `backend`.
    - Keep the included `backend/vercel.json` as-is.
    - Add environment variables:
-     - `MONGO_URI` (Atlas connection string)
-     - `JWT_SECRET` (strong random string)
+     - `MONGO_URI` (Atlas connection string — required in production)
+     - `JWT_SECRET` (strong random string — **required**; without it, login returns a server error)
      - `JWT_EXPIRES_IN=7d` (optional)
-     - `AUTO_SEED=true` (recommended on first deploy so admin user exists)
-     - `CLIENT_ORIGINS=https://<your-frontend-domain>.vercel.app`
-     - `ALLOW_VERCEL_PREVIEWS=true` (optional, allows preview domains)
+     - `AUTO_SEED=true` (recommended on first deploy so the demo admin and products exist)
+     - `CLIENT_ORIGINS=https://<your-frontend-domain>.vercel.app` (optional; any `https://*.vercel.app` is allowed unless you set `CORS_STRICT=true`)
+     - `ALLOW_VERCEL_PREVIEWS=true` (optional; extra preview support — not required for `*.vercel.app` when `CORS_STRICT` is off)
+     - `CORS_STRICT=true` (optional; allow **only** origins listed in `CLIENT_ORIGIN` / `CLIENT_ORIGINS` plus localhost)
 
 2. **Deploy frontend (`frontend/`)**
    - Create another Vercel project with root directory `frontend`.
+   - `frontend/vercel.json` rewrites all routes to `index.html` so React Router paths like `/admin/login` work after refresh.
    - Add env variable:
-     - `VITE_API_URL=https://<your-backend-domain>.vercel.app`
+     - `VITE_API_URL=https://<your-backend-domain>.vercel.app` (no trailing slash; do not append `/api`)
    - Redeploy frontend after setting env.
 
 3. **Admin login**

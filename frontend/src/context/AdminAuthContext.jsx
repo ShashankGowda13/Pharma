@@ -15,7 +15,7 @@ export function AdminAuthProvider({ children }) {
   });
 
   const login = useCallback(async (email, password) => {
-    const { data } = await api.post('/api/auth/admin/login', { email, password });
+    const { data } = await api.post('/api/auth/admin/login', { email, password }, { skipAuth: true });
     localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
     localStorage.setItem('pharma_admin_user', JSON.stringify(data.user));
     setAdmin(data.user);

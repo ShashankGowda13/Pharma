@@ -17,17 +17,33 @@ function parseOrigins(value) {
     .filter(Boolean);
 }
 
-const allowVercelPreviews = process.env.ALLOW_VERCEL_PREVIEWS === 'true';
-const allowedOrigins = new Set([
+const allowVercelPreviews =
+  process.env.ALLOW_VERCEL_PREVIEWS === 'true' || process.env.ALLOW_VERCEL_PREVIEWS === '1';
+const corsStrict = process.env.CORS_STRICT === 'true' || process.env.CORS_STRICT === '1';
+const configuredOrigins = [
   ...parseOrigins(process.env.CLIENT_ORIGINS),
   ...parseOrigins(process.env.CLIENT_ORIGIN),
-  'http://localhost:5173',
-]);
+];
+const hasExplicitOrigins = configuredOrigins.length > 0;
+const allowedOrigins = new Set([...configuredOrigins, 'http://localhost:5173']);
+
+/** e.g. https://my-app.vercel.app — common when frontend and API are separate Vercel projects */
+function isVercelAppOrigin(origin) {
+  if (!origin) return false;
+  try {
+    const u = new URL(origin);
+    if (u.protocol !== 'https:') return false;
+    return u.hostname.endsWith('.vercel.app');
+  } catch {
+    return false;
+  }
+}
 
 function isAllowedOrigin(origin) {
   if (!origin) return true;
+  if (!hasExplicitOrigins) return true;
   if (allowedOrigins.has(origin)) return true;
-  if (allowVercelPreviews && /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin)) {
+  if (!corsStrict && (allowVercelPreviews || isVercelAppOrigin(origin))) {
     return true;
   }
   return false;
