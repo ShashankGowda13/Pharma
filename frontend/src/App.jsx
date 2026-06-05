@@ -4,14 +4,10 @@ import RequireAdmin from './components/RequireAdmin';
 import Home from './pages/Home';
 import Products from './pages/Products';
 import ProductDetail from './pages/ProductDetail';
-import Cart from './pages/Cart';
-import Checkout from './pages/Checkout';
-import Orders from './pages/Orders';
-import TrackOrder from './pages/TrackOrder';
+// Order/cart routes removed
 import About from './pages/About';
 import Contact from './pages/Contact';
-import Login from './pages/Login';
-import Register from './pages/Register';
+// Login/Register routes removed
 import NotFound from './pages/NotFound';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminLayout from './pages/admin/AdminLayout';
@@ -47,14 +43,10 @@ export default function App() {
         <Route index element={<Home />} />
         <Route path="products" element={<Products />} />
         <Route path="products/:id" element={<ProductDetail />} />
-        <Route path="cart" element={<Cart />} />
-        <Route path="checkout" element={<Checkout />} />
-        <Route path="orders" element={<Orders />} />
-        <Route path="track-order" element={<TrackOrder />} />
+
         <Route path="about" element={<About />} />
         <Route path="contact" element={<Contact />} />
-        <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
+
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

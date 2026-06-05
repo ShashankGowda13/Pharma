@@ -3,7 +3,7 @@ const { validationResult } = require('express-validator');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 
-/** POST /api/orders — authenticated customer */
+/** POST /api/orders — public guest checkout (user optional) */
 exports.create = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -57,20 +57,23 @@ exports.create = async (req, res) => {
       paymentStatus = mockPaymentSuccess === true ? 'paid' : 'unpaid';
     }
 
-    const [order] = await Order.create(
-      [
-        {
-          user: req.user._id,
-          items: lineItems,
-          total,
-          paymentMethod,
-          paymentStatus,
-          shippingAddress: shippingAddress || req.user.address || '',
-          status: 'pending',
-        },
-      ],
-      { session }
-    );
+    const orderData = {
+      items: lineItems,
+      total,
+      paymentMethod,
+      paymentStatus,
+      shippingAddress: shippingAddress || (req.user && req.user.address) || '',
+      status: 'pending',
+    };
+    if (req.user && req.user._id) {
+      orderData.user = req.user._id;
+    } else if (req.body.guest) {
+      orderData.guest = req.body.guest;
+    } else {
+      await session.abortTransaction();
+      return res.status(400).json({ message: 'Guest information required' });
+    }
+    const [order] = await Order.create([orderData], { session });
 
     await session.commitTransaction();
     res.status(201).json(order);

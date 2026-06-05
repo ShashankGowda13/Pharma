@@ -50,30 +50,6 @@ export default function Home() {
             checkout and order history.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              to="/products"
-              className="inline-flex items-center justify-center rounded-2xl bg-white px-6 py-3.5 text-sm font-bold text-brand-900 shadow-lg transition hover:bg-amber-50"
-            >
-              Shop catalogue
-            </Link>
-            <Link
-              to="/register"
-              className="inline-flex items-center justify-center rounded-2xl border-2 border-white/35 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/15"
-            >
-              Create account
-            </Link>
-            <Link
-              to="/cart"
-              className="inline-flex items-center justify-center rounded-2xl border-2 border-amber-300/60 bg-amber-400/20 px-6 py-3.5 text-sm font-bold text-amber-100 backdrop-blur transition hover:bg-amber-400/30"
-            >
-              Place order
-            </Link>
-            <Link
-              to="/track-order"
-              className="inline-flex items-center justify-center rounded-2xl border-2 border-white/25 bg-white/10 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-white/20"
-            >
-              Track order
-            </Link>
           </div>
           <a
             href="#categories"
@@ -148,11 +124,12 @@ export default function Home() {
               className="flex gap-4 rounded-2xl border border-slate-200/90 bg-white p-5 shadow-md transition hover:border-brand-300 hover:shadow-lg"
             >
               <img src={mediaUrl(p.image)} alt="" className="h-24 w-24 shrink-0 rounded-xl object-cover ring-1 ring-slate-100" />
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 flex-1 flex flex-col">
                 <p className="line-clamp-2 font-semibold text-slate-900">{p.name}</p>
                 <p className="mt-1 text-xs font-medium uppercase tracking-wide text-brand-600/80">
                   {p.category?.replace('-', ' ')}
                 </p>
+                <p className="mt-1 line-clamp-2 text-xs text-slate-600 flex-grow">{p.description}</p>
                 <p className="mt-2 text-lg font-bold text-brand-800">{formatINR(p.price)}</p>
               </div>
             </Link>
@@ -163,7 +140,7 @@ export default function Home() {
       <section className="rounded-3xl bg-gradient-to-r from-brand-900 to-slate-900 px-8 py-12 text-center text-white shadow-xl">
         <p className="font-display text-2xl font-bold sm:text-3xl">Ready when you are</p>
         <p className="mx-auto mt-3 max-w-lg text-sm text-teal-100/90">
-          Create an account to save your address, place orders in INR, and track deliveries from your orders page.
+          Browse our curated selection of medicines, vitamins, devices, and personal care items.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link to="/products" className="rounded-2xl bg-white px-6 py-3 text-sm font-bold text-brand-900 hover:bg-amber-50">

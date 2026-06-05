@@ -14,7 +14,7 @@ const createRules = [
   body('mockPaymentSuccess').optional().isBoolean(),
 ];
 
-router.post('/', protect, userOnly, createRules, order.create);
+router.post('/', createRules, order.create);
 router.get('/my', protect, userOnly, order.myOrders);
 /** Must be before GET / so "my" is not treated as :id */
 router.get('/my/:orderId', protect, userOnly, order.getMyOrderById);

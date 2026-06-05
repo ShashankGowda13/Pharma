@@ -130,9 +130,10 @@ export default function Products() {
                   className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                 />
               </div>
-              <div className="p-5">
+              <div className="p-5 flex flex-col h-full">
                 <p className="line-clamp-2 font-semibold text-slate-900 group-hover:text-brand-800">{p.name}</p>
                 <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-brand-600/80">{p.category}</p>
+                <p className="mt-2 line-clamp-2 text-sm text-slate-600 flex-grow">{p.description}</p>
                 <p className="mt-3 font-display text-xl font-bold text-brand-900">{formatINR(p.price)}</p>
                 <p className="mt-1 text-xs text-slate-500">In stock: {p.stock}</p>
               </div>

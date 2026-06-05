@@ -1,17 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import api, { mediaUrl } from '../services/api';
-import { useCart } from '../context/CartContext';
+// Cart removed
 import { useCatalog } from '../context/CatalogContext';
 import { formatINR } from '../utils/formatPrice';
 
 export default function ProductDetail() {
   const { id } = useParams();
   const { catalogVersion } = useCatalog();
-  const { addItem } = useCart();
   const [product, setProduct] = useState(null);
-  const [qty, setQty] = useState(1);
-  const [msg, setMsg] = useState('');
   const [err, setErr] = useState('');
 
   useEffect(() => {
@@ -45,19 +42,7 @@ export default function ProductDetail() {
     return <p className="py-20 text-center font-medium text-slate-500">Loading…</p>;
   }
 
-  const max = Math.max(1, product.stock || 0);
-  const safeQty = Math.min(qty, max);
 
-  const handleAdd = () => {
-    if (product.stock < 1) {
-      setMsg('');
-      setErr('Out of stock');
-      return;
-    }
-    addItem(product, safeQty);
-    setErr('');
-    setMsg('Added to cart');
-  };
 
   return (
     <div className="grid gap-10 lg:grid-cols-2 lg:gap-14">
@@ -73,29 +58,7 @@ export default function ProductDetail() {
           SKU: {product.sku || '—'} · In stock: <span className="font-semibold text-brand-800">{product.stock}</span>
         </p>
 
-        <div className="mt-8 flex flex-wrap items-center gap-4">
-          <label className="text-sm font-semibold text-brand-900" htmlFor="qty">
-            Quantity
-          </label>
-          <input
-            id="qty"
-            type="number"
-            min={1}
-            max={max}
-            value={safeQty}
-            onChange={(e) => setQty(Math.max(1, Number(e.target.value) || 1))}
-            className="w-28 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-medium focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200"
-          />
-          <button
-            type="button"
-            onClick={handleAdd}
-            disabled={product.stock < 1}
-            className="rounded-2xl bg-gradient-to-r from-brand-600 to-brand-900 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-brand-900/30 transition hover:from-brand-500 hover:to-brand-800 disabled:cursor-not-allowed disabled:opacity-45"
-          >
-            Add to cart
-          </button>
-        </div>
-        {msg && <p className="mt-4 text-sm font-bold text-emerald-700">{msg}</p>}
+
         {err && <p className="mt-4 text-sm font-bold text-red-600">{err}</p>}
 
         <Link

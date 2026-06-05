@@ -1,28 +1,27 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
+  Area,
+  AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
-  ComposedChart,
   Legend,
-  Line,
   ResponsiveContainer,
+
   Tooltip,
   XAxis,
   YAxis,
 } from 'recharts';
 import api from '../../services/api';
-import { formatINR } from '../../utils/formatPrice';
 
 function ChartTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-lg border border-slate-600 bg-slate-900/95 px-3 py-2 text-xs shadow-xl">
       <p className="mb-1 font-semibold text-slate-200">{label}</p>
-      {payload.map((p) => (
+      {payload.map(p => (
         <p key={p.name} className="text-slate-300">
-          <span className="text-slate-500">{p.name}:</span>{' '}
-          {p.dataKey === 'orders' ? p.value : formatINR(p.value ?? 0)}
+          <span className="text-slate-500">{p.name}:</span> {p.value.toLocaleString()}
         </p>
       ))}
     </div>
@@ -35,7 +34,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    const fetchData = async () => {
       try {
         const { data: d } = await api.get('/api/admin/dashboard', { admin: true });
         if (!cancelled) setData(d);
@@ -43,17 +42,22 @@ export default function AdminDashboard() {
         if (!cancelled) {
           setErr(
             e.response?.data?.message ||
-              (e.response?.status === 401 ? 'Session expired — log in again.' : 'Failed to load dashboard')
+            (e.response?.status === 401 ? 'Session expired — log in again.' : 'Failed to load dashboard')
           );
         }
       }
-    })();
+    };
+    fetchData();
+    const interval = setInterval(() => {
+      if (!cancelled) fetchData();
+    }, 30000);
     return () => {
       cancelled = true;
+      clearInterval(interval);
     };
   }, []);
 
-  const chartKey = useMemo(() => (data ? `${data.totalOrders}-${data.monthly?.length}` : '0'), [data]);
+  const chartKey = useMemo(() => (data ? `${data.realTimeSeries?.[data.realTimeSeries?.length - 1]?.label || data.totalVisitors}` : '0'), [data]);
 
   if (err) {
     return (
@@ -72,54 +76,83 @@ export default function AdminDashboard() {
     );
   }
 
-  const monthly = data.monthly || [];
-  const weekly = data.weekly || [];
-
   const kpi = [
     {
-      label: 'Lifetime revenue',
-      value: formatINR(data.totalRevenue ?? 0),
-      sub: 'All non-cancelled orders',
-      accent: 'from-teal-500/20 to-teal-900/20',
+      label: 'Live Visitors (last 5 min)',
+      value: data.realTimeVisitors?.toLocaleString() ?? 0,
+      sub: 'Visitors in last 5 minutes',
+      accent: 'from-blue-500/20 to-blue-900/20',
     },
     {
-      label: 'Est. gross profit',
-      value: formatINR(data.totalProfit ?? 0),
-      sub: 'From sale price − cost price × qty',
-      accent: 'from-amber-500/20 to-amber-900/20',
+      label: "Today's Visitors",
+      value: data.todayVisitors?.toLocaleString() ?? 0,
+      sub: 'Visitors since midnight',
+      accent: 'from-purple-500/20 to-purple-900/20',
     },
     {
-      label: 'Total orders',
-      value: data.totalOrders ?? 0,
-      sub: 'All time',
-      accent: 'from-indigo-500/20 to-indigo-950/30',
+      label: 'This Week Visitors',
+      value: data.thisWeekVisitors?.toLocaleString() ?? 0,
+      sub: 'Visitors since start of week',
+      accent: 'from-indigo-500/20 to-indigo-900/20',
     },
     {
-      label: 'Customers',
-      value: data.totalUsers ?? 0,
-      sub: 'Registered shoppers',
-      accent: 'from-cyan-500/20 to-cyan-950/30',
+      label: 'This Month Visitors',
+      value: data.thisMonthVisitors?.toLocaleString() ?? 0,
+      sub: 'Visitors since start of month',
+      accent: 'from-pink-500/20 to-pink-900/20',
     },
     {
       label: 'Live products',
-      value: data.totalProducts ?? 0,
+      value: data.totalProducts?.toLocaleString() ?? 0,
       sub: 'Active in storefront',
       accent: 'from-emerald-500/20 to-emerald-950/30',
     },
   ];
+
+  const renderVisitorChart = (chartData, title, type = 'bar') => (
+    <div className="rounded-2xl border border-slate-700/80 bg-slate-900/60 p-5 shadow-xl">
+      <h2 className="font-display text-lg font-semibold text-white">{title}</h2>
+      <div className="mt-4 h-64 w-full min-w-0">
+        <ResponsiveContainer key={`${title}-${chartKey}`} width="100%" height="100%" debounce={50}>
+          {type === 'bar' ? (
+            <BarChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.6} vertical={false} />
+              <XAxis dataKey="label" tick={{ fill: '#94a3b8', fontSize: 11 }} />
+              <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} width={44} tickFormatter={v => (v >= 1000 ? `${(v / 1000).toFixed(1)}k` : v)} />
+              <Tooltip content={<ChartTooltip />} />
+              <Bar dataKey="visitors" name="Visitors" fill="#3b82f6" radius={[4, 4, 0, 0]} maxBarSize={40} />
+            </BarChart>
+          ) : (
+            <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="colorVis" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.6} vertical={false} />
+              <XAxis dataKey="label" tick={{ fill: '#94a3b8', fontSize: 11 }} />
+              <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} width={44} tickFormatter={v => (v >= 1000 ? `${(v / 1000).toFixed(1)}k` : v)} />
+              <Tooltip content={<ChartTooltip />} />
+              <Area type="monotone" dataKey="visitors" name="Visitors" stroke="#3b82f6" fillOpacity={1} fill="url(#colorVis)" />
+            </AreaChart>
+          )}
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
 
   return (
     <div className="space-y-10 pb-8">
       <div>
         <h1 className="font-display text-3xl font-bold text-white">Analytics dashboard</h1>
         <p className="mt-2 text-sm text-slate-400">
-          Monthly & weekly order volume, revenue, and profit (set <strong className="text-teal-300">cost price</strong> on
-          each product for accurate margin).
+          Track website visitors, wishlisted items, and overall store performance.
         </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        {kpi.map((c) => (
+        {kpi.map(c => (
           <div
             key={c.label}
             className={`rounded-2xl border border-slate-700/80 bg-gradient-to-br ${c.accent} p-5 shadow-lg backdrop-blur`}
@@ -131,74 +164,7 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-2">
-        <div className="rounded-2xl border border-slate-700/80 bg-slate-900/60 p-5 shadow-xl">
-          <h2 className="font-display text-lg font-semibold text-white">This month — daily performance</h2>
-          <p className="mt-1 text-xs text-slate-500">Orders (bars) · Revenue (teal) · Profit (gold line)</p>
-          <div className="mt-4 h-80 w-full min-w-0">
-            <ResponsiveContainer key={`m-${chartKey}`} width="100%" height="100%" debounce={50}>
-              <ComposedChart data={monthly} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.6} />
-                <XAxis dataKey="label" tick={{ fill: '#94a3b8', fontSize: 11 }} />
-                <YAxis yAxisId="orders" tick={{ fill: '#94a3b8', fontSize: 11 }} allowDecimals={false} width={36} />
-                <YAxis
-                  yAxisId="inr"
-                  orientation="right"
-                  tick={{ fill: '#94a3b8', fontSize: 10 }}
-                  tickFormatter={(v) => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v)}
-                  width={44}
-                />
-                <Tooltip content={<ChartTooltip />} />
-                <Legend wrapperStyle={{ fontSize: 12, paddingTop: 8 }} />
-                <Bar yAxisId="orders" dataKey="orders" name="Orders" fill="#6366f1" radius={[4, 4, 0, 0]} maxBarSize={40} />
-                <Bar yAxisId="inr" dataKey="revenue" name="Revenue" fill="#14b8a6" radius={[4, 4, 0, 0]} maxBarSize={40} />
-                <Line
-                  yAxisId="inr"
-                  type="monotone"
-                  dataKey="profit"
-                  name="Profit"
-                  stroke="#fbbf24"
-                  strokeWidth={2.5}
-                  dot={{ fill: '#fbbf24', r: 3 }}
-                />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-slate-700/80 bg-slate-900/60 p-5 shadow-xl">
-          <h2 className="font-display text-lg font-semibold text-white">This week — by weekday</h2>
-          <p className="mt-1 text-xs text-slate-500">Sun–Sat · same metrics</p>
-          <div className="mt-4 h-80 w-full min-w-0">
-            <ResponsiveContainer key={`w-${chartKey}`} width="100%" height="100%" debounce={50}>
-              <BarChart data={weekly} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.6} />
-                <XAxis dataKey="label" tick={{ fill: '#94a3b8', fontSize: 11 }} />
-                <YAxis yAxisId="left" tick={{ fill: '#94a3b8', fontSize: 11 }} allowDecimals={false} width={36} />
-                <YAxis
-                  yAxisId="right"
-                  orientation="right"
-                  tick={{ fill: '#94a3b8', fontSize: 10 }}
-                  width={44}
-                />
-                <Tooltip content={<ChartTooltip />} />
-                <Legend wrapperStyle={{ fontSize: 12, paddingTop: 8 }} />
-                <Bar yAxisId="left" dataKey="orders" name="Orders" fill="#818cf8" radius={[4, 4, 0, 0]} />
-                <Bar yAxisId="right" dataKey="revenue" name="Revenue" fill="#0d9488" radius={[4, 4, 0, 0]} />
-                <Bar yAxisId="right" dataKey="profit" name="Profit" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
-
-      <div className="rounded-2xl border border-teal-800/40 bg-teal-950/30 p-5 text-sm text-teal-100/90">
-        <p className="font-semibold text-teal-200">Tips</p>
-        <ul className="mt-2 list-inside list-disc space-y-1 text-teal-100/70">
-          <li>Add <strong>cost price</strong> when editing a product — profit charts use (selling price − cost) × quantity.</li>
-          <li>Charts include every day of the current month (zeros on quiet days) so the axes stay stable.</li>
-        </ul>
-      </div>
+      {data.realTimeSeries?.length > 0 && renderVisitorChart(data.realTimeSeries, 'Real‑time Visitors (Last 30 min)', 'area')}
     </div>
   );
 }

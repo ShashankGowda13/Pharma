@@ -30,12 +30,7 @@ export default function AdminLayout() {
             <NavLink to="/admin/products" className={navCls}>
               Products
             </NavLink>
-            <NavLink to="/admin/stock" className={navCls}>
-              Stock & alerts
-            </NavLink>
-            <NavLink to="/admin/orders" className={navCls}>
-              Orders
-            </NavLink>
+
             <NavLink to="/admin/users" className={navCls}>
               Users
             </NavLink>
@@ -82,14 +77,7 @@ export default function AdminLayout() {
         >
           Products
         </NavLink>
-        <NavLink
-          to="/admin/orders"
-          className={({ isActive }) =>
-            `flex-1 rounded-lg py-2 text-center text-xs font-medium ${isActive ? 'bg-slate-800 text-white' : 'text-slate-400'}`
-          }
-        >
-          Orders
-        </NavLink>
+
       </nav>
     </div>
   );

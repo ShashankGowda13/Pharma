@@ -5,7 +5,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/auth.routes');
 const productRoutes = require('./routes/product.routes');
 const orderRoutes = require('./routes/order.routes');
-const userRoutes = require('./routes/user.routes');
+
 const adminRoutes = require('./routes/admin.routes');
 
 const app = express();
@@ -75,7 +75,7 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
-app.use('/api/users', userRoutes);
+
 app.use('/api/admin', adminRoutes);
 
 // Central error handler (four-arg signature required by Express)
