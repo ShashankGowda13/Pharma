@@ -24,6 +24,7 @@ export default function AdminProductForm() {
   const { bumpCatalog } = useCatalog();
   const [form, setForm] = useState(empty);
   const [file, setFile] = useState(null);
+  const [docFile, setDocFile] = useState(null);
   const [loading, setLoading] = useState(!isNew);
   const [err, setErr] = useState('');
 
@@ -72,7 +73,9 @@ export default function AdminProductForm() {
     fd.append('stock', form.stock);
     fd.append('sku', form.sku);
     fd.append('isActive', String(form.isActive));
+    // documentUrl will be set by backend if a PDF is uploaded
     if (file) fd.append('image', file);
+    if (docFile) fd.append('document', docFile);
 
     try {
       if (isNew) {
@@ -191,6 +194,16 @@ export default function AdminProductForm() {
           />
           {!isNew && (
             <p className="mt-2 text-xs text-slate-500">Leave empty to keep the current image.</p>
+          )}
+          <label className="mt-4 text-sm font-semibold text-slate-300">Product document (PDF)</label>
+          <input
+            type="file"
+            accept="application/pdf"
+            onChange={(e) => setDocFile(e.target.files?.[0] || null)}
+            className="mt-2 w-full text-sm text-slate-400"
+          />
+          {!isNew && (
+            <p className="mt-2 text-xs text-slate-500">Leave empty to keep the current document.</p>
           )}
         </div>
         <label className="flex cursor-pointer items-center gap-3 text-sm text-slate-300">

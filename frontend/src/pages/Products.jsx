@@ -127,7 +127,7 @@ export default function Products() {
                 <img
                   src={mediaUrl(p.image)}
                   alt=""
-                  className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                  className="h-full w-full object-contain transition duration-500 group-hover:scale-105"
                 />
               </div>
               <div className="p-5 flex flex-col h-full">

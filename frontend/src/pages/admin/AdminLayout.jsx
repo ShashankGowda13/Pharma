@@ -30,10 +30,6 @@ export default function AdminLayout() {
             <NavLink to="/admin/products" className={navCls}>
               Products
             </NavLink>
-
-            <NavLink to="/admin/users" className={navCls}>
-              Users
-            </NavLink>
           </nav>
           <button
             type="button"

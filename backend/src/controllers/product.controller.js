@@ -67,8 +67,11 @@ exports.create = async (req, res) => {
     if (!body.name || !body.category || Number.isNaN(body.price)) {
       return res.status(400).json({ message: 'name, category, and valid price are required' });
     }
-    if (req.file) {
-      body.image = `/uploads/${req.file.filename}`;
+    if (req.files?.image?.[0]) {
+      body.image = `/uploads/${req.files.image[0].filename}`;
+    }
+    if (req.files?.document?.[0]) {
+      body.documentUrl = `/uploads/${req.files.document[0].filename}`;
     }
     const product = await Product.create(body);
     res.status(201).json(product);
@@ -91,8 +94,11 @@ exports.update = async (req, res) => {
     if (updates.isActive !== undefined) {
       updates.isActive = updates.isActive === true || updates.isActive === 'true';
     }
-    if (req.file) {
-      updates.image = `/uploads/${req.file.filename}`;
+    if (req.files?.image?.[0]) {
+      updates.image = `/uploads/${req.files.image[0].filename}`;
+    }
+    if (req.files?.document?.[0]) {
+      updates.documentUrl = `/uploads/${req.files.document[0].filename}`;
     }
     const product = await Product.findByIdAndUpdate(req.params.id, updates, {
       new: true,

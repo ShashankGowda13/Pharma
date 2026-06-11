@@ -123,7 +123,7 @@ export default function Home() {
               to={`/products/${p._id}`}
               className="flex gap-4 rounded-2xl border border-slate-200/90 bg-white p-5 shadow-md transition hover:border-brand-300 hover:shadow-lg"
             >
-              <img src={mediaUrl(p.image)} alt="" className="h-24 w-24 shrink-0 rounded-xl object-cover ring-1 ring-slate-100" />
+              <img src={mediaUrl(p.image)} alt="" className="max-w-full max-h-[150px] object-contain mx-auto" />
               <div className="min-w-0 flex-1 flex flex-col">
                 <p className="line-clamp-2 font-semibold text-slate-900">{p.name}</p>
                 <p className="mt-1 text-xs font-medium uppercase tracking-wide text-brand-600/80">
@@ -138,13 +138,13 @@ export default function Home() {
       </section>
 
       <section className="rounded-3xl bg-gradient-to-r from-brand-900 to-slate-900 px-8 py-12 text-center text-white shadow-xl">
-        <p className="font-display text-2xl font-bold sm:text-3xl">Ready when you are</p>
+        <p className="font-display text-2xl font-bold sm:text-3xl">View Products</p>
         <p className="mx-auto mt-3 max-w-lg text-sm text-teal-100/90">
           Browse our curated selection of medicines, vitamins, devices, and personal care items.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link to="/products" className="rounded-2xl bg-white px-6 py-3 text-sm font-bold text-brand-900 hover:bg-amber-50">
-            Start shopping
+            View products
           </Link>
           <a
             href="#top"

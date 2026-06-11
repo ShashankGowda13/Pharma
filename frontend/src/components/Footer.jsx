@@ -82,7 +82,7 @@ export default function Footer() {
 
             </div>
             <div className="flex justify-center space-x-4 mt-4">
-              <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer" className="text-teal-200 hover:text-white" aria-label="WhatsApp">
+              <a href="https://wa.me/918073353836" target="_blank" rel="noopener noreferrer" className="text-teal-200 hover:text-white" aria-label="WhatsApp">
                 <FaWhatsapp className="w-5 h-5" aria-label="WhatsApp" />
               </a>
               <a href="https://instagram.com/yourhandle" target="_blank" rel="noopener noreferrer" className="text-teal-200 hover:text-white" aria-label="Instagram">

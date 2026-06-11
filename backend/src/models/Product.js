@@ -15,6 +15,8 @@ const productSchema = new mongoose.Schema(
     },
     /** Public URL path e.g. /uploads/filename.jpg */
     image: { type: String, default: '' },
+    /** Public URL path for optional PDF document e.g. /uploads/doc.pdf */
+    documentUrl: { type: String, default: '' },
     stock: { type: Number, required: true, min: 0, default: 0 },
     sku: { type: String, trim: true, default: '' },
     isActive: { type: Boolean, default: true },
