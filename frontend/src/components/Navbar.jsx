@@ -4,22 +4,21 @@ import { Link, NavLink } from 'react-router-dom';
 import { COMPANY_NAME } from '../constants/branding';
 
 const linkClass = ({ isActive }) =>
-  `px-3 py-2 rounded-xl text-sm font-medium transition ${
-    isActive
-      ? 'bg-brand-700 text-white shadow-md shadow-brand-700/25'
-      : 'text-slate-700 hover:bg-white/80 hover:text-brand-800'
+  `px-4 py-2 rounded-xl text-base font-bold transition ${isActive
+    ? 'bg-brand-700 text-white shadow-md shadow-brand-700/25'
+    : 'text-slate-700 hover:bg-white/80 hover:text-brand-800'
   }`;
 
 export default function Navbar() {
-// Auth removed
-// useCart removed
+  // Auth removed
+  // useCart removed
 
   return (
     <header className="sticky top-0 z-40 border-b border-teal-900/10 bg-white/85 shadow-sm shadow-teal-900/5 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:gap-4">
         <Link to="/" className="group flex min-w-0 items-center gap-2.5 sm:gap-3">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-600 to-brand-900 font-display text-sm font-bold text-amber-100 shadow-lg shadow-brand-900/30 ring-2 ring-amber-400/30 transition group-hover:ring-amber-400/60">
-            CP
+            <img src="./logo.jpg"></img>
           </span>
           <span className="min-w-0 leading-tight">
             <span className="block font-display text-base font-bold tracking-tight text-brand-900 sm:text-lg">
