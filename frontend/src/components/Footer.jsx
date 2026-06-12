@@ -85,7 +85,7 @@ export default function Footer() {
               <a href="https://wa.me/918073353836" target="_blank" rel="noopener noreferrer" className="text-teal-200 hover:text-white" aria-label="WhatsApp">
                 <FaWhatsapp className="w-5 h-5" aria-label="WhatsApp" />
               </a>
-              <a href="https://instagram.com/yourhandle" target="_blank" rel="noopener noreferrer" className="text-teal-200 hover:text-white" aria-label="Instagram">
+              <a href="#" target="_blank" rel="noopener noreferrer" className="text-teal-200 hover:text-white" aria-label="Instagram">
                 <FaInstagram className="w-5 h-5" aria-label="Instagram" />
               </a>
             </div>
